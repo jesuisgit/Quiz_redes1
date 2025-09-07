@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Redes de Computadores</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .quiz-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      width: 450px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    h2 {
+      font-size: 18px;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      margin: 15px 0;
+    }
+    button {
+      margin: 5px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #6200ea;
+      color: white;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #4500b5;
+    }
+    .explanation {
+      margin-top: 15px;
+      padding: 10px;
+      background: #eaeaea;
+      border-left: 5px solid #6200ea;
+      display: none;
+      text-align: left;
+    }
+    #next-btn {
+      margin-top: 15px;
+      background: #008c4a;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h2 id="question">Carregando...</h2>
+    <div class="options" id="options"></div>
+    <div class="explanation" id="explanation"></div>
+    <button id="next-btn">Próxima</button>
+  </div>
+
+  <script>
+const quiz = [
+  {
+    question: "Quais são os quatro elementos necessários para a comunicação em redes?",
+    options: ["Emissor, Receptor, Sinal e Meio de Transmissão", "Computador, Switch, Roteador e Cabo", "Usuário, Servidor, Rede e Internet", "Mensagem, Protocolo, Aplicativo e Cabo"],
+    answer: 0,
+    explanation: "Toda comunicação exige um emissor que envia a mensagem, um receptor que a recebe, um sinal que transporta a informação e um meio de transmissão que serve de canal físico ou lógico."
+  },
+  {
+    question: "Quem inventou o telégrafo em 1838?",
+    options: ["Graham Bell", "Samuel Morse", "Alan Turing", "Andrew Tanenbaum"],
+    answer: 1,
+    explanation: "O telégrafo foi criado por Samuel Morse em 1838 e é considerado um marco inicial da comunicação à distância, precursor das redes modernas."
+  },
+  {
+    question: "A invenção do telefone é atribuída a:",
+    options: ["Thomas Edison", "Nikola Tesla", "Alexander Graham Bell", "Claude Shannon"],
+    answer: 2,
+    explanation: "Alexander Graham Bell patenteou o telefone em 1876. Essa inovação tornou possível a comunicação por voz em longas distâncias."
+  },
+  {
+    question: "Qual topologia conecta todos os dispositivos a um único cabo central?",
+    options: ["Estrela", "Barramento", "Anel", "Malha"],
+    answer: 1,
+    explanation: "Barramento usa um único cabo compartilhado. É simples e barata, mas falhas no cabo interrompem toda a rede e o desempenho cai com muito tráfego."
+  },
+  {
+    question: "Na topologia em estrela, todos os dispositivos estão conectados a:",
+    options: ["Um cabo único", "Um nó central (hub/switch)", "Entre si diretamente", "Um roteador externo"],
+    answer: 1,
+    explanation: "Na Estrela, cada nó se conecta a um hub ou switch. Facilita manutenção e isolamento de falhas, mas depende do nó central."
+  },
+  {
+    question: "Qual topologia tem formato circular e pode parar caso um nó falhe?",
+    options: ["Malha", "Anel", "Árvore", "Híbrida"],
+    answer: 1,
+    explanation: "Na topologia em Anel, os dados circulam em um laço. Uma falha em um nó pode derrubar a rede, mas o uso de concentradores melhora a resiliência."
+  },
+  {
+    question: "Qual topologia conecta todos os dispositivos entre si diretamente?",
+    options: ["Malha", "Estrela", "Árvore", "Barramento"],
+    answer: 0,
+    explanation: "A Malha liga cada nó a todos os outros. É a mais segura contra falhas, mas tem alto custo de cabos e configuração."
+  },
+  {
+    question: "Qual topologia lembra uma hierarquia, semelhante a galhos de uma árvore?",
+    options: ["Estrela", "Anel", "Árvore", "Híbrida"],
+    answer: 2,
+    explanation: "Na Árvore, os nós são organizados de forma hierárquica, partindo de um nó central e distribuindo pacotes em níveis inferiores."
+  },
+  {
+    question: "Qual topologia mistura duas ou mais formas distintas?",
+    options: ["Híbrida", "Anel", "Malha", "Estrela"],
+    answer: 0,
+    explanation: "A Híbrida combina topologias diferentes, como Estrela + Barramento. É muito comum em redes modernas que integram LANs e WANs."
+  },
+  {
+    question: "O que significa LAN?",
+    options: ["Local Area Network", "Large Access Node", "Logical Area Network", "Local Access Net"],
+    answer: 0,
+    explanation: "LAN (Local Area Network) conecta computadores em uma área limitada, como escritórios, casas ou escolas."
+  },
+  {
+    question: "Qual rede cobre uma área metropolitana?",
+    options: ["LAN", "PAN", "MAN", "WAN"],
+    answer: 2,
+    explanation: "MAN (Metropolitan Area Network) interliga várias LANs em uma área urbana ou metropolitana, com dezenas de km de alcance."
+  },
+  {
+    question: "Uma rede que cobre longas distâncias, acima de 100 km, é chamada:",
+    options: ["LAN", "WAN", "PAN", "MAN"],
+    answer: 1,
+    explanation: "WAN (Wide Area Network) cobre grandes distâncias, conectando cidades, países e até continentes."
+  },
+  {
+    question: "Qual rede é usada para conectar dispositivos pessoais como celulares e impressoras?",
+    options: ["PAN", "LAN", "WAN", "SAN"],
+    answer: 0,
+    explanation: "PAN (Personal Area Network) conecta dispositivos pessoais em curtas distâncias, geralmente via Bluetooth ou Wi-Fi doméstico."
+  },
+  {
+    question: "Qual rede é formada por várias redes ao redor do mundo?",
+    options: ["WAN", "GAN", "VPN", "Ad Hoc"],
+    answer: 1,
+    explanation: "GAN (Global Area Network) conecta redes mundiais, como a própria Internet, permitindo comunicações globais."
+  },
+  {
+    question: "Uma rede construída sobre infraestrutura pública, com criptografia e túneis virtuais, é chamada:",
+    options: ["P2P", "VPN", "SAN", "WLAN"],
+    answer: 1,
+    explanation: "VPN (Virtual Private Network) cria uma rede privada segura dentro da Internet, usando criptografia e protocolos de tunelamento."
+  },
+  {
+    question: "Qual tipo de rede é focada em armazenamento de dados em alto desempenho?",
+    options: ["WAN", "SAN", "PAN", "LAN"],
+    answer: 1,
+    explanation: "SAN (Storage Area Network) é usada para armazenamento rápido e confiável de dados em ambientes corporativos."
+  },
+  {
+    question: "Qual rede funciona sem infraestrutura fixa, com dispositivos móveis formando rotas espontâneas?",
+    options: ["MAN", "Ad Hoc (MANET)", "VPN", "LAN"],
+    answer: 1,
+    explanation: "Ad Hoc (MANET) conecta dispositivos móveis que criam rotas dinamicamente, sem roteadores fixos. Muito usada em emergências ou cenários militares."
+  },
+  {
+    question: "Qual rede sem fio conecta sensores em larga escala, como em automação?",
+    options: ["WSN", "WAN", "PAN", "GAN"],
+    answer: 0,
+    explanation: "WSN (Wireless Sensor Network) é composta por sensores sem fio com baixa energia e poder de processamento, usados em automação e monitoramento."
+  },
+  {
+    question: "Qual rede usa o corpo humano como meio de transmissão?",
+    options: ["HAN/WBAN", "PAN", "SAN", "WLAN"],
+    answer: 0,
+    explanation: "HAN ou WBAN (Human/Body Area Network) permite comunicação entre dispositivos eletrônicos através do corpo humano como condutor."
+  },
+  {
+    question: "Qual tipo de rede ponto-a-ponto permite que cada nó seja cliente e servidor ao mesmo tempo?",
+    options: ["VPN", "P2P", "LAN", "WAN"],
+    answer: 1,
+    explanation: "P2P (Peer-to-Peer) permite que computadores compartilhem recursos diretamente, sem um servidor central. Exemplo: torrents."
+  }
+];
+
+    let currentQuestion = 0;
+
+    function loadQuestion() {
+      const q = quiz[currentQuestion];
+      document.getElementById("question").innerText = q.question;
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.onclick = () => checkAnswer(i);
+        optionsDiv.appendChild(btn);
+      });
+      document.getElementById("explanation").style.display = "none";
+      document.getElementById("next-btn").style.display = "none";
+    }
+
+    function checkAnswer(selected) {
+      const q = quiz[currentQuestion];
+      const explanationDiv = document.getElementById("explanation");
+      if (selected === q.answer) {
+        explanationDiv.innerHTML = "<b>Correto!</b> " + q.explanation;
+      } else {
+        explanationDiv.innerHTML = "<b>Errado!</b> " + q.explanation;
+      }
+      explanationDiv.style.display = "block";
+      document.getElementById("next-btn").style.display = "inline-block";
+    }
+
+    document.getElementById("next-btn").onclick = () => {
+      currentQuestion++;
+      if (currentQuestion < quiz.length) {
+        loadQuestion();
+      } else {
+        document.querySelector(".quiz-container").innerHTML = "<h2>Fim do Quiz! 🎉</h2>";
+      }
+    };
+
+    loadQuestion();
+  </script>
+</body>
+</html>
